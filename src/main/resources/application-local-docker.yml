@@ -1,0 +1,65 @@
+debug: true
+
+server:
+  port: 8112
+  error:
+    include-message: always
+  shutdown: graceful
+
+
+spring:
+  application:
+    name: authorization-server-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    defer-datasource-initialization: true
+    open-in-view: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+  datasource:
+    url: jdbc:postgresql://postgresqlserver:5432/wb__authorization_server
+    username: postgres
+    password: postgres
+
+  liquibase:
+    url: jdbc:postgresql://postgresqlserver:5432/wb__authorization_server
+    user: postgres
+    password: postgres
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: false
+
+
+logging:
+  level:
+    root: INFO
+    com.mathias8dev: TRACE
+    org.springframework.jdbc: DEBUG
+    org.springframework.security: trace
+  file:
+    name: ./logs/local-docker-${spring.application.name}.log
+
+
+
+# Custom
+webfluxblog:
+  gateway:
+    baseurl: http://192.168.1.37:8082
+    api-url: http://192.168.1.37:8082/api
+  security:
+    jwt:
+      issuer-uri: http://webfluxblog-authorization-server-service:${server.port}
+
+
+# Eureka client
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://webfluxblog-eureka-server-service:8085/eureka
+  instance:
+    hostname: webfluxblog-eureka-server-service
+    prefer-ip-address: true

@@ -1,0 +1,62 @@
+debug: false
+
+server:
+  port: 8110
+  error:
+    include-message: always
+  shutdown: graceful
+
+spring:
+  application:
+    name: authorization-server-service
+  jpa:
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    open-in-view: false
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://prod-webfluxblog-postgresqlserver:5432/wb__authorization_server
+    username: postgres
+    password: postgres
+
+  liquibase:
+    url: jdbc:postgresql://prod-webfluxblog-postgresqlserver:5432/wb__authorization_server
+    user: postgres
+    password: postgres
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: false
+
+
+logging:
+  level:
+    root: INFO
+    com.mathias8dev: TRACE
+    org.springframework.jdbc: DEBUG
+    org.springframework.security: trace
+  file:
+    name: ./logs/prod-${spring.application.name}.log
+
+webfluxblog:
+  gateway:
+    baseurl: http://prod-webfluxblog-gateway-service:8080
+    api-url: http://prod-webfluxblog-gateway-service:8080/api
+  security:
+    jwt:
+      issuer-uri: http://prod-webfluxblog-authorization-server-service:${server.port}
+
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://prod-webfluxblog-eureka-server-service:8083/eureka
+  instance:
+    hostname: prod-webfluxblog-eureka-server-service
+    prefer-ip-address: true
+

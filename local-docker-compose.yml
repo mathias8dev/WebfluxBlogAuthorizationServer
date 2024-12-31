@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  webfluxblog-authorization-server-service: # The name of the service
+    container_name: webfluxblog-authorization-server-service  # Setting the container name
+    image: webfluxblog-authorization-server-service-local-image
+    restart: always # Always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8112:8112" # Map The current port
+    networks:
+      webfluxblog-network-overlay:
+    volumes:
+      - webfluxblog-authorization-server-service-local-volume:/uploads
+    environment:
+      spring.profiles.active: local-docker
+
+
+networks:
+  webfluxblog-network-overlay:
+    external: true
+
+volumes:
+  webfluxblog-authorization-server-service-local-volume:
+    name: webfluxblog-authorization-server-service-local-volume
+
+# To build, docker-compose up --build -d or generally ./gradlew bootJar && docker-compose up --build -d
